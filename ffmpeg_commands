@@ -1,0 +1,28 @@
+#FFMPEG and FFPROBE commands
+
+#1 FFMPEG command for receiving live stream from camera and storing it in segmented mp4 format of duration 10 seconds
+ffmpeg -i rtsp://<Axis camera IP Address>/axis-media/media.amp -c copy -map 0 -f segment -segment_time 10 -segment_format mp4 "out%03d.mp4"
+
+#2 FFMPEG command for receiving live streams from camera and storing it to file of duration 10 sec in mp4 format
+ffmpeg -i rtsp://<HIKVISION camera IP Address>/ISAPI/streaming/channels/101 -r 20 -s 2048x1536 -b 90k -ar 8000 -ab 32k -acodec copy -vcodec copy -y -t 10 testing.mp4
+
+
+#3 FFMPEG command for receiving rtsp stream from Network Security Camera and generating segmented ts file with playlist
+ffmpeg -i rtsp://<Axis camera IP Address>/axis-media/media.amp -map 0 -f segment -segment_time 10 -segment_list_flags live -segment_list_size 10 -segment_list test.m3u8 -segment_format mpegts "out%03d.ts"
+
+#For reducing latency decrease segment_time as low as possible.
+
+#4 FFMPEG command for receiving interleaved rtp data and storing it in mpegts format
+ffmpeg -i -rtsp_transport tcp rtsp://<Axis camera IP Address>/axis-media/media.amp -map 0 -f segment -segment_time 10 -segment_list_flags live -segment_list_size 10 -segment_list test.m3u8 -segment_format mpegts "out%03d.ts"
+
+#5 FFPROBE command for printing mp4 contents
+ffprobe -show_frames <file>.mp4 > frames.txt
+
+#6 FFPROBE command for printing important I frame information from mp4 file 
+ffprobe -show_frames -select_streams v:0 -show_entries frame=key_frame,coded_picture_number,pkt_pts_time,pkt_pos,media_type testing.mp4
+
+#7 #6 in JSON Format
+ffprobe -show_frames -select_streams v:0  -print_format json -show_entries frame=key_frame,coded_picture_number,pkt_pts_time,pkt_pos,media_type testing.mp4
+
+#8 FFPROBE command for printing all the I frames in a mp4 file in a text format
+ffprobe -show_format -show_entries format=creation_time -show_frames -select_streams v:0 -print_format compact -show_entries  frame=key_frame,pkt_pts_time,pkt_pos,creation_time,pkt_size testing.mp4 | grep -e "key_frame=1" -e "creation_time"
