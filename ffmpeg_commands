@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #FFMPEG and FFPROBE commands
 
 #1 FFMPEG command for receiving live stream from camera and storing it in segmented mp4 format of duration 10 seconds
