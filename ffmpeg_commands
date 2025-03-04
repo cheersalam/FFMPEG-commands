@@ -28,3 +28,6 @@ ffprobe -show_frames -select_streams v:0  -print_format json -show_entries frame
 
 #8 FFPROBE command for printing all the I frames in a mp4 file in a text format
 ffprobe -show_format -show_entries format=creation_time -show_frames -select_streams v:0 -print_format compact -show_entries  frame=key_frame,pkt_pts_time,pkt_pos,creation_time,pkt_size testing.mp4 | grep -e "key_frame=1" -e "creation_time"
+
+
+ffprobe -select_streams v -show_entries frame=pict_type,pts_time -of csv=p=0 -skip_frame nokey -i sample-ts.mkv
